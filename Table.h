@@ -13,11 +13,12 @@ public:
 	void showTables(User *user);
 	int getSize() { return m_info.size(); }
 	int getLength() { return m_info[0].size(); }
-	string insertValue(const string &info);
+	void insertValue(const string &info);
 	//string insertValue(const string &info, const string &pos);
 	string findAndDelete(const string &key, const string &tofind);
 	string deleteLine(const string &key);
-	string findByKey(const string &key, bool distinct);
+	string findByKey(const vector<string> &key);
+	void select(const string &str);
 	static void creatTable(const string &filename, const string &name, User *user);
 	static void creatTable(const vector<string> &keys, const string &name, const string &filename, User *user);
 	static void deleteTable(const string &name);
@@ -33,6 +34,7 @@ private:
 	string m_name;
 	string m_txtName;
 	vector<vector<string>> m_info;
+	unordered_map<string, int> m_where;
 
 	User *m_owner;
 };

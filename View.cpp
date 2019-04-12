@@ -21,7 +21,7 @@ View &View::getInstance()
 	return *Instance;
 }
 
-void View::showMessage(const string &str, const string &bef = "(mysql)==>")
+void View::showMessage(const string &str, const string &bef)
 {
 	cout << bef;
 	cout << str << std::endl;
