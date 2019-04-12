@@ -154,8 +154,63 @@ void Table::insertValue(const string &info)
 // string Table::insertValue(const string &info, const string &pos)
 // {
 // }
-string Table::findAndDelete(const string &key, const string &tofind)
+void Table::findAndDelete(const string &str)
 {
+	stringstream ss(str);
+	string tmp, name, whc, whv;
+	bool all = false;
+	ss >> tmp;
+	while (ss >> tmp)
+	{
+		if (tmp == "FROM")
+		{
+			ss >> name;
+		}
+		else if (tmp == "WHERE")
+		{
+			ss >> whc;
+			ss >> tmp;
+			ss >> whv;
+			if (!m_where.count(whc))
+			{
+				View::getInstance().showMessage(whc, "Error:不存在关键字 ");
+				return;
+			}
+			if (!ss)
+			{
+				View::getInstance().showMessage(str, "Error:非法输入");
+				return;
+			}
+		}
+		else if (tmp == "*")
+		{
+			all = true;
+		}
+	}
+	if (name == "")
+	{
+		View::getInstance().showMessage("", "Error:请输入要查询的数据库 ");
+		return;
+	}
+	if (all)
+	{
+		while (m_info.size() > 1)
+		{
+			m_info.erase(m_info.end());
+		}
+	}
+	else
+	{
+		for (int i = 1; i < m_info.size(); i++)
+		{
+			if (m_info[i][m_where[whc]] == whv)
+			{
+				m_info.erase(m_info.begin() + i);
+			}
+			m_info[i][0] = My::UIntToStr(i);
+		}
+	}
+	saveToFile();
 }
 string Table::deleteLine(const string &key)
 {

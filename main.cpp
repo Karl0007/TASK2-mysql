@@ -19,6 +19,7 @@ int main()
 	Table::creatTable("student.txt", "student", nullptr);
 	//Table::all_name["student"]->insertValue("(姓名, 专业)(张六, 计算机)");
 	Table::all_name["student"]->select("SELECT DISTINCT 学号 FROM student ORDER BY 专业 DESC TO class.txt");
+	Table::all_name["student"]->findAndDelete("DELETE * FROM course");
 
 	//Table::creatTable("course.txt", "course", nullptr);
 	//Table::deleteTable("course");

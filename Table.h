@@ -15,7 +15,7 @@ public:
 	int getLength() { return m_info[0].size(); }
 	void insertValue(const string &info);
 	//string insertValue(const string &info, const string &pos);
-	string findAndDelete(const string &key, const string &tofind);
+	void findAndDelete(const string &str);
 	string deleteLine(const string &key);
 	string findByKey(const vector<string> &key);
 	void select(const string &str);
