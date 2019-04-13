@@ -1,5 +1,6 @@
 #include "Table.h"
 #include "View.h"
+#include "User.h"
 #include "StringOperator.h"
 using Mysql::View;
 unordered_map<string, Table *> Table::all_name;
@@ -105,12 +106,91 @@ void Table::saveToFile()
 	{
 		os << My::MergeVec(t);
 	}
+	os.close();
+	os.open("__TableList__");
+	for (auto t : all_name)
+	{
+		os << t.second->m_name << " " << t.second->m_txtName << " " << t.second->m_owner->m_name << endl;
+	}
 }
 void Table::loadFromFile()
 {
+	ifstream is("__TableList__");
+	string name, file, user;
+	while (is >> name >> file >> user)
+	{
+		//cout << file << name << endl;
+		creatTable(file, name, User::all_user[user]);
+	}
+	for (auto &user : User::all_user)
+	{
+		for (auto &table : all_name)
+		{
+			user.second->Drop[table.second->m_name] = TreeNode();
+			user.second->Delete[table.second->m_name] = TreeNode();
+			user.second->Insert[table.second->m_name] = TreeNode();
+			user.second->Select[table.second->m_name] = TreeNode();
+		}
+	}
 }
 void Table::showTables(User *user)
 {
+	unordered_map<Table *, vector<string>> tables;
+	for (auto t : all_name)
+	{
+		tables[t.second] = vector<string>();
+	}
+	//cout << user->Drop.size() << "drop size" << endl;
+	for (auto treenode : user->Drop)
+	{
+		if (treenode.second.p.size())
+		{
+			tables[all_name[treenode.first]].push_back("DROP");
+		}
+	}
+	for (auto treenode : user->Delete)
+	{
+		if (treenode.second.p.size())
+		{
+			tables[all_name[treenode.first]].push_back("DELETE");
+		}
+	}
+	for (auto treenode : user->Insert)
+	{
+		if (treenode.second.p.size())
+		{
+			tables[all_name[treenode.first]].push_back("INSERT");
+		}
+	}
+	for (auto treenode : user->Select)
+	{
+		if (treenode.second.p.size())
+		{
+			tables[all_name[treenode.first]].push_back("SELECT");
+		}
+	}
+	int cnt = 0;
+	for (auto t : tables)
+	{
+		if (t.second.size() != 0)
+		{
+			cnt++;
+		}
+	}
+
+	cout << "\ttotal:" << cnt << endl;
+	for (auto t : tables)
+	{
+		if (t.second.size() != 0)
+		{
+			cout << "\t\t";
+			cout << t.first->m_name << " : (" << t.first->getLength() - 1 << "," << t.first->getSize() - 2 << ") [" << My::MergeVec(t.first->m_info[0], ", ", "] ") << My::MergeVec(t.second, ", ", "");
+			//cout << t.first->m_owner->m_name << endl;
+			if (t.first->m_owner == user)
+				cout << "[OWNER]";
+			cout << endl;
+		}
+	}
 }
 void Table::insertValue(const string &info)
 {
@@ -211,12 +291,6 @@ void Table::findAndDelete(const string &str)
 		}
 	}
 	saveToFile();
-}
-string Table::deleteLine(const string &key)
-{
-}
-string Table::findByKey(const vector<string> &key)
-{
 }
 
 void Table::select(const string &str)
@@ -384,4 +458,5 @@ void Table::select(const string &str)
 			cout << My::MergeVec(t);
 		}
 	}
+	saveToFile();
 }

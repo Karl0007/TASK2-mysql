@@ -70,10 +70,11 @@ string Replace(const string &str, const char a, const string &b)
 string MergeVec(const vector<string> &strs, const string &split, const string &end)
 {
 	string ans;
-	for (auto i : strs)
+	for (int i = 0; i < strs.size(); i++)
 	{
-		ans += i;
-		ans += split;
+		ans += strs[i];
+		if (i != strs.size() - 1)
+			ans += split;
 	}
 	ans += end;
 	return ans;

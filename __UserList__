@@ -1,0 +1,15 @@
+__ADMIN__ __ADMIN__
+user1 123456
+user2 abcdef
+user3 aaaaaa
+__END__
+user1
+student DROP __ADMIN__ INSERT __ADMIN__ DELETE __ADMIN__ SELECT __ADMIN__
+__END__
+user2
+student DROP user1 INSERT user1
+__END__
+user3
+student DROP user2 INSERT user2
+course DROP __ADMIN__ INSERT __ADMIN__ DELETE __ADMIN__ SELECT __ADMIN__
+__END__

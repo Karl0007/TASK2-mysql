@@ -1,1 +1,6 @@
-ID	姓名	学号	专业	
+ID	姓名	学号	专业
+1	aa	1	bb
+2	aac	2	bbb
+3	acc	3	bab
+4	joia	4	fie
+5	jfi 5	efi
