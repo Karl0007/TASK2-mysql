@@ -1,2 +1,4 @@
 course course.txt user3
 student student.txt user1
+newtable new.txt user1
+new2 new2.txt user1

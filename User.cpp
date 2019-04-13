@@ -34,7 +34,7 @@ void User::init()
 				string q, f;
 				while (ss >> q >> f)
 				{
-					//cout << name << q << f << endl;
+					//cout << user->m_name << name << q << f << endl;
 					if (q == "DROP")
 					{
 						user->Drop[name].p.insert(all_user[f]);
@@ -61,6 +61,9 @@ void User::init()
 			getline(is, str);
 		}
 	}
+	User::save();
+	//cout << User::all_user["user2"]->Drop["student"].p.size();
+
 	//cout << Table::all_name.size() << "rwfaw" << endl;
 }
 
@@ -133,6 +136,7 @@ void User::revoke(const string &str)
 		User::all_user[user]->Select[name].p.erase(this);
 		User::all_user[user]->revokesel(name);
 	}
+	save();
 }
 
 void User::revokedrop(const string &name)
@@ -270,6 +274,7 @@ void User::grant(const string &str)
 			View::getInstance().showMessage("INSERT", "Error:权限错误 ");
 		}
 	}
+	save();
 }
 
 bool User::notpar(TreeNode const &t, User *u)
@@ -278,7 +283,7 @@ bool User::notpar(TreeNode const &t, User *u)
 
 void User::save()
 {
-	ofstream os("userlist");
+	ofstream os("__UserList__");
 	for (auto &u : all_user)
 	{
 		os << u.second->m_name << " " << u.second->m_password << endl;
@@ -308,5 +313,11 @@ void User::save()
 		os << "__END__" << endl;
 	}
 }
+
+bool User::checklogin(const string &n, const string &p)
+{
+	return User::all_user[n]->m_password == p;
+}
+
 User::User(string const &n, string const &p) : m_name(n), m_password(p) {}
 User::~User() {}

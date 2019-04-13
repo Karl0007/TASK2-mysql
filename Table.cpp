@@ -28,7 +28,12 @@ void Table::creatTable(const string &filename, const string &name, User *user)
 		auto tmp = new Table(filename, name, user);
 		all_name[name] = tmp;
 		all_txtName[filename] = tmp;
+		user->Drop[name].p.insert(User::all_user["__ADMIN__"]);
+		user->Delete[name].p.insert(User::all_user["__ADMIN__"]);
+		user->Insert[name].p.insert(User::all_user["__ADMIN__"]);
+		user->Select[name].p.insert(User::all_user["__ADMIN__"]);
 		tmp->saveToFile();
+		User::save();
 	}
 	else
 	{
@@ -52,7 +57,12 @@ void Table::creatTable(const vector<string> &keys, const string &name, const str
 	auto tmp = new Table(keys, name, filename, user);
 	all_name[name] = tmp;
 	all_txtName[filename] = tmp;
+	user->Drop[name].p.insert(User::all_user["__ADMIN__"]);
+	user->Delete[name].p.insert(User::all_user["__ADMIN__"]);
+	user->Insert[name].p.insert(User::all_user["__ADMIN__"]);
+	user->Select[name].p.insert(User::all_user["__ADMIN__"]);
 	tmp->saveToFile();
+	User::save();
 }
 
 void Table::deleteTable(const string &name)
@@ -63,9 +73,25 @@ void Table::deleteTable(const string &name)
 		return;
 	}
 	auto tmp = all_name[name];
+	tmp->m_owner->Drop[name].p.clear();
+	tmp->m_owner->Delete[name].p.clear();
+	tmp->m_owner->Insert[name].p.clear();
+	tmp->m_owner->Select[name].p.clear();
+
+	tmp->m_owner->revokedel(name);
+	tmp->m_owner->revokedrop(name);
+	tmp->m_owner->revokeins(name);
+	tmp->m_owner->revokesel(name);
 	all_name.erase(tmp->m_name);
 	all_name.erase(tmp->m_txtName);
 	system((string("rm ") + tmp->m_txtName).c_str());
+	User::save();
+	ofstream os;
+	os.open("__TableList__");
+	for (auto t : all_name)
+	{
+		os << t.second->m_name << " " << t.second->m_txtName << " " << t.second->m_owner->m_name << endl;
+	}
 	delete tmp;
 }
 
@@ -184,7 +210,7 @@ void Table::showTables(User *user)
 		if (t.second.size() != 0)
 		{
 			cout << "\t\t";
-			cout << t.first->m_name << " : (" << t.first->getLength() - 1 << "," << t.first->getSize() - 2 << ") [" << My::MergeVec(t.first->m_info[0], ", ", "] ") << My::MergeVec(t.second, ", ", "");
+			cout << t.first->m_name << " : (" << t.first->getLength() - 1 << "," << t.first->getSize() - 1 << ") [" << My::MergeVec(t.first->m_info[0], ", ", "] ") << My::MergeVec(t.second, ", ", "");
 			//cout << t.first->m_owner->m_name << endl;
 			if (t.first->m_owner == user)
 				cout << "[OWNER]";
@@ -384,6 +410,7 @@ void Table::select(const string &str)
 	//cout << whc << "=" << whv << endl;
 	//cout << name << endl;
 	//cout << to << endl;
+
 	vector<vector<string>> tempinfo = m_info;
 	vector<vector<string>> res;
 	if (order.size())
@@ -429,6 +456,7 @@ void Table::select(const string &str)
 		vector<string> tmp;
 		for (int j = 0; j < keys.size(); j++)
 		{
+			//cout << keys[j] << tempinfo[i][m_where[keys[j]]] << endl;
 			tmp.push_back(tempinfo[i][m_where[keys[j]]]);
 		}
 		tmp[0] = My::UIntToStr(res.size());

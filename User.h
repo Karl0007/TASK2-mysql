@@ -28,10 +28,16 @@ private:
 	~User();
 
 public:
+	unordered_map<string, TreeNode> Drop;
+	unordered_map<string, TreeNode> Insert;
+	unordered_map<string, TreeNode> Delete;
+	unordered_map<string, TreeNode> Select;
+
 	static unordered_map<string, User *> all_user;
 	static void init();
 	static void save();
 	static bool notpar(TreeNode const &t, User *);
+	static bool checklogin(const string &, const string &);
 	void revokedrop(const string &);
 	void revokedel(const string &);
 	void revokeins(const string &);
@@ -42,8 +48,4 @@ public:
 private:
 	string m_name;
 	string m_password;
-	unordered_map<string, TreeNode> Drop;
-	unordered_map<string, TreeNode> Insert;
-	unordered_map<string, TreeNode> Delete;
-	unordered_map<string, TreeNode> Select;
 };
